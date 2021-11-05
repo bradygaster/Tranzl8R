@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tranzl8R</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.5.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="3.5.0" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="3.5.0" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="3.5.0" />
+    <PackageReference Include="Microsoft.Orleans.Transactions.AzureStorage" Version="3.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tranzl8R.Grains.Interfaces\Tranzl8R.Grains.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
