@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Orleans;
 using Orleans.Hosting;
 using Orleans.TestingHost;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Tranzl8R.Tests
 {
@@ -34,8 +30,20 @@ namespace Tranzl8R.Tests
         public void Configure(ISiloBuilder siloBuilder)
         {
             siloBuilder.ConfigureServices(services => {
-                services.AddSingleton<ILanguagesGrain, TestLanguageGrain>();
+                services.AddSingleton<ILanguagesGrain, CognitiveServicesAvailableLanguages>();
+                services.AddSingleton<IConfiguration>(
+                    new ConfigurationBuilder()
+                        .AddEnvironmentVariables()
+                        .AddUserSecrets<ClusterFixture>()
+                        .Build());
             });
+        }
+
+        public IConfiguration GetTestDataConfiguration()
+        {
+            return new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
         }
     }
 }

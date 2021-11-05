@@ -17,9 +17,9 @@ namespace Tranzl8R.Tests
         public async Task ProvidesAvailableLanguagesCorrectly()
         {
             var grain = _cluster.GrainFactory.GetGrain<ILanguagesGrain>(Guid.Empty);
-            var language = await grain.GetAvailableLanguages();
+            var languages = await grain.GetAvailableLanguages();
 
-            Assert.Equal("Klingon", language);
+            Assert.NotEmpty(languages);
         }
     }
 }
