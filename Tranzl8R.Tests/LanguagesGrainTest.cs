@@ -17,9 +17,15 @@ namespace Tranzl8R.Tests
         public async Task ProvidesAvailableLanguagesCorrectly()
         {
             var grain = _cluster.GrainFactory.GetGrain<ILanguagesGrain>(Guid.Empty);
-            var languages = await grain.GetAvailableLanguages();
+            var languages = await grain.GetAllLanguages();
 
             Assert.NotEmpty(languages);
+        }
+
+        [Fact]
+        public async Task ShowsLanguagesThatHaveTranslators()
+        {
+            Assert.False(true);
         }
     }
 }

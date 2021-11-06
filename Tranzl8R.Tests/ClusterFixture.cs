@@ -27,23 +27,28 @@ namespace Tranzl8R.Tests
 
     public class TestSiloConfigurations : ISiloConfigurator
     {
-        public void Configure(ISiloBuilder siloBuilder)
+        private IConfigurationRoot _configuration;
+        public TestSiloConfigurations()
         {
-            siloBuilder.ConfigureServices(services => {
-                services.AddSingleton<ILanguagesGrain, CognitiveServicesAvailableLanguages>();
-                services.AddSingleton<IConfiguration>(
-                    new ConfigurationBuilder()
-                        .AddEnvironmentVariables()
-                        .AddUserSecrets<ClusterFixture>()
-                        .Build());
-            });
+            _configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .AddUserSecrets<ClusterFixture>()
+                .Build();
         }
 
-        public IConfiguration GetTestDataConfiguration()
+        public void Configure(ISiloBuilder siloBuilder)
         {
-            return new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .Build();
+            siloBuilder.AddAzureTableGrainStorageAsDefault((storageOptions) =>
+            {
+                storageOptions.UseJson = true;
+                storageOptions.ConnectionString = _configuration["AZURE_STORAGE_CONNECTION_STRING"];
+            });
+
+            siloBuilder.ConfigureServices(services => {
+                services.AddHttpClient();
+                services.AddSingleton<ILanguagesGrain, CognitiveServicesAvailableLanguages>();
+                services.AddSingleton<IConfiguration>(_configuration);
+            });
         }
     }
 }
