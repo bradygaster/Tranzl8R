@@ -9,7 +9,7 @@ namespace Tranzl8R
 {
     internal class CognitiveServicesTranslator : Grain, ITranslator
     {
-        string _languageCodeBeingServed;
+        string _languageCodeBeingServed = String.Empty;
 
         public async Task CheckIn(ITranslationServer languageServer, string languageCode)
         {
@@ -22,9 +22,13 @@ namespace Tranzl8R
             await languageServer.ToggleLanguageActiveStatus(_languageCodeBeingServed);
         }
 
-        public Task<string> Translate(string originalPhrase, string originalLanguageCode = "en")
+        public async Task<string> Translate(ITranslationServer languageServer, string originalPhrase, string originalLanguageCode = "en")
         {
-            throw new NotImplementedException();
+            var translatedPhrase = "[Translated Phrase Here]";
+            await languageServer.ReceiveTranslatedString(new TranslationResponse(_languageCodeBeingServed,
+                translatedPhrase, originalPhrase)
+            );
+            return translatedPhrase;
         }
     }
 }

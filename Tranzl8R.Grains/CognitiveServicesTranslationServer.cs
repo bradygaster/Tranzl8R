@@ -38,5 +38,10 @@ namespace Tranzl8R
             Languages.First(_ => _.Code == language).IsTranslatorReady = !isReady;
             return Task.CompletedTask;
         }
+
+        public Task ReceiveTranslatedString(TranslationResponse response)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
