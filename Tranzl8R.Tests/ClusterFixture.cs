@@ -46,7 +46,7 @@ namespace Tranzl8R.Tests
 
             siloBuilder.ConfigureServices(services => {
                 services.AddHttpClient();
-                services.AddSingleton<ILanguagesGrain, CognitiveServicesAvailableLanguages>();
+                services.AddSingleton<ITranslationServer, CognitiveServicesTranslationServer>();
                 services.AddSingleton<IConfiguration>(_configuration);
             });
         }
