@@ -5,18 +5,15 @@
 
 <h1>Tranzl8R</h1>
 
-<p>Welcome to Tranzl8R, a sample app that shows you how Orleans can be used to implement distributed processing.</p>
+<p>Welcome to Tranzl8R, a sample app that shows you how Orleans can be used to implement distributed processing. Enter in the phrase you want to translate into multiple languages and click the translate button.</p>
 
 <h2>Perform Translation</h2>
-
-<p>Enter in the phrase you want to translate into multiple languages and click the translate button.</p>
 
 <input type="text" @bind="currentPhrase"/>
 <input type="button" class="btn btn-primary" value="Translate" @onclick="Translate" />
 <hr size="4" />
 
 <h2>Select Languages</h2>
-<p>Use the list of languages below to activate or deactivate a translator. When you submit a phrase for translation, all of the languages you've activated will be used.</p>
 
 <table class="table">
     <thead>

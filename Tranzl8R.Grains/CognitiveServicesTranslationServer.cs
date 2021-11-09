@@ -26,7 +26,7 @@ namespace Tranzl8R
             if(!Languages.Any())
             {
                 using (var client = HttpClientFactory.CreateClient())
-                using (var request = client.SetupTranslatorRequestFromConfiguration(Configuration, LanguageListUrl))
+                using (var request = client.SetupLanguageListRequestFromConfiguration(Configuration, LanguageListUrl))
                 {
                     request.Method = HttpMethod.Get;
                     HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
