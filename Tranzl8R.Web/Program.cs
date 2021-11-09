@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Orleans;
 using Orleans.Hosting;
+using Tranzl8R;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,10 @@ builder.Services.AddHttpClient();
 builder.Host.UseOrleans(siloBuilder =>
 {
     siloBuilder.UseLocalhostClustering();
+    siloBuilder
+        .ConfigureApplicationParts(applicationParts =>
+                applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
+        .UseDashboard();
 });
 
 var app = builder.Build();
