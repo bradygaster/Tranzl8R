@@ -1,19 +1,24 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 using Orleans;
 
 namespace Tranzl8R
 {
     public class CognitiveServicesTranslationServer : Grain, ITranslationServer
     {
-        public CognitiveServicesTranslationServer(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public CognitiveServicesTranslationServer(IConfiguration configuration,
+            IHttpClientFactory httpClientFactory,
+            IGrainFactory grainFactory)
         {
             Configuration = configuration;
             HttpClientFactory = httpClientFactory;
+            GrainFactory = grainFactory;
         }
 
         private const string LanguageListUrl = "/languages?api-version=3.0&scope=translation";
         public IConfiguration Configuration { get; }
         public IHttpClientFactory HttpClientFactory { get; }
+        public IGrainFactory GrainFactory { get; }
         public List<LanguageItem> Languages { get; internal set; } = new List<LanguageItem>();
 
         public async Task<List<LanguageItem>> GetAllLanguages()
@@ -39,9 +44,25 @@ namespace Tranzl8R
             return Task.CompletedTask;
         }
 
-        public Task ReceiveTranslatedString(TranslationResponse response)
+        public async Task<List<TranslationResponse>> Translate(string phrase, string phraseLanguage = "en")
         {
-            return Task.CompletedTask;
+            var languagesWithTranslators = Languages.Where(_ => _.IsTranslatorReady).ToList();
+            var result = new List<TranslationResponse>();
+            var taskList = new List<Task>();
+
+            foreach (var language in languagesWithTranslators)
+            {
+                taskList.Add(Task.Run(async () =>
+                {
+                    var translator = GrainFactory.GetGrain<ITranslator>(language.Code);
+                    var translatedPhrase = await translator.Translate(phrase);
+                    result.Add(new TranslationResponse(language.Code, translatedPhrase, phrase));
+                }));
+            }
+
+            Task.WhenAll(taskList).Wait();
+
+            return result;
         }
     }
 }

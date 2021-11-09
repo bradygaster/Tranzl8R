@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tranzl8R
 {
-    internal class CognitiveServicesTranslator : Grain, ITranslator
+    public class CognitiveServicesTranslator : Grain, ITranslator
     {
         string _languageCodeBeingServed = String.Empty;
 
@@ -22,12 +22,9 @@ namespace Tranzl8R
             await languageServer.ToggleLanguageActiveStatus(_languageCodeBeingServed);
         }
 
-        public async Task<string> Translate(ITranslationServer languageServer, string originalPhrase, string originalLanguageCode = "en")
+        public async Task<string> Translate(string originalPhrase, string originalLanguageCode = "en")
         {
-            var translatedPhrase = "[Translated Phrase Here]";
-            await languageServer.ReceiveTranslatedString(new TranslationResponse(_languageCodeBeingServed,
-                translatedPhrase, originalPhrase)
-            );
+            var translatedPhrase = $"[{originalPhrase} translated to {_languageCodeBeingServed} here]";
             return translatedPhrase;
         }
     }

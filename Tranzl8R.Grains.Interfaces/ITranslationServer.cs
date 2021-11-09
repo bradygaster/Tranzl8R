@@ -8,7 +8,7 @@ namespace Tranzl8R
     {
         Task<List<LanguageItem>> GetAllLanguages();
         Task ToggleLanguageActiveStatus(string language);
-        Task ReceiveTranslatedString(TranslationResponse response);
+        Task<List<TranslationResponse>> Translate(string phrase, string phraseLanguage = "en");
     }
 
     public record LanguageItem(string Name, string Code)

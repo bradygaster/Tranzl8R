@@ -3,15 +3,20 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Moq;
+using Xunit.Abstractions;
 
 namespace Tranzl8R.Tests
 {
     public class LanguagesGrainTest : IClassFixture<ClusterFixture>
     {
         private readonly TestCluster _cluster;
-        public LanguagesGrainTest(ClusterFixture fixture)
+        private readonly ITestOutputHelper _output;
+
+        public LanguagesGrainTest(ClusterFixture fixture, ITestOutputHelper output)
         {
             _cluster = fixture.Cluster;
+            _output = output;
         }
 
         [Fact]
@@ -71,10 +76,30 @@ namespace Tranzl8R.Tests
             Assert.Equal(totalWeShouldHaveNow, newTotalLanguagesWithCheckedInTranslators);
         }
 
-        //[Fact]
-        //public async Task TranslatorsActuallyTranslate()
-        //{
-        //    Assert.False(true);
-        //}
+        [Fact]
+        public async Task TranslatorsPeformTranslation()
+        {
+            var translationServerGrain = _cluster.GrainFactory.GetGrain<ITranslationServer>(Guid.Empty);
+            var languages = await translationServerGrain.GetAllLanguages();
+            var totalLanguagesWithCheckedInTranslators = languages.Where(_ => _.IsTranslatorReady == true).Count();
+
+            languages.Where(_ => _.IsTranslatorReady == false)
+                    .OrderBy(_ => new Random().Next())
+                    .Take(5)
+                    .ToList()
+                    .ForEach(async (language) =>
+                    {
+                        var translator = _cluster.GrainFactory.GetGrain<ITranslator>(language.Code);
+                        await translator.CheckIn(translationServerGrain, language.Code);
+                    });
+
+            languages = await translationServerGrain.GetAllLanguages();
+            totalLanguagesWithCheckedInTranslators = languages.Where(_ => _.IsTranslatorReady == true).Count();
+
+            var results = await translationServerGrain.Translate("Hello World");
+            results.ForEach(r => _output.WriteLine(r.Translation));
+
+            Assert.Equal(totalLanguagesWithCheckedInTranslators, results.Count);
+        }
     }
 }

@@ -7,6 +7,6 @@ namespace Tranzl8R
     {
         Task CheckIn(ITranslationServer languageServer, string languageCode);
         Task CheckOut(ITranslationServer languageServer);
-        Task<string> Translate(ITranslationServer languageServer, string originalPhrase, string originalLanguageCode = "en");
+        Task<string> Translate(string originalPhrase, string originalLanguageCode = "en");
     }
 }
