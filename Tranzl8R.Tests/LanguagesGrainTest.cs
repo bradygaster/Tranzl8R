@@ -36,7 +36,7 @@ namespace Tranzl8R.Tests
             Assert.True(languages.First(_ => _.Code == "es").IsTranslatorReady == false);
             var spanishCode = "es";
             var spanishTranslator = _cluster.GrainFactory.GetGrain<ITranslator>(spanishCode);
-            await spanishTranslator.CheckIn(translationServerGrain, spanishCode);
+            await spanishTranslator.CheckIn(translationServerGrain);
             languages = await translationServerGrain.GetAllLanguages();
             Assert.True(languages.First(_ => _.Code == "es").IsTranslatorReady == true);
         }
@@ -49,7 +49,7 @@ namespace Tranzl8R.Tests
             var langCode = "de";
             Assert.True(languages.First(_ => _.Code == langCode).IsTranslatorReady == false);
             var translator = _cluster.GrainFactory.GetGrain<ITranslator>(langCode);
-            await translator.CheckIn(translationServerGrain, langCode);
+            await translator.CheckIn(translationServerGrain);
             languages = await translationServerGrain.GetAllLanguages();
             Assert.True(languages.First(_ => _.Code == langCode).IsTranslatorReady == true);
         }
@@ -68,7 +68,7 @@ namespace Tranzl8R.Tests
             foreach (var language in randomAvailableLanguages)
             {
                 var translator = _cluster.GrainFactory.GetGrain<ITranslator>(language.Code);
-                await translator.CheckIn(translationServerGrain, language.Code);
+                await translator.CheckIn(translationServerGrain);
             }
             var totalWeShouldHaveNow = countToAdd + totalLanguagesWithCheckedInTranslators;
             var newTotalLanguagesWithCheckedInTranslators = (await translationServerGrain.GetAllLanguages())
@@ -90,7 +90,7 @@ namespace Tranzl8R.Tests
                     .ForEach(async (language) =>
                     {
                         var translator = _cluster.GrainFactory.GetGrain<ITranslator>(language.Code);
-                        await translator.CheckIn(translationServerGrain, language.Code);
+                        await translator.CheckIn(translationServerGrain);
                     });
 
             languages = await translationServerGrain.GetAllLanguages();

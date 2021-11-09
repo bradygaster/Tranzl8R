@@ -11,15 +11,14 @@ namespace Tranzl8R
     {
         string _languageCodeBeingServed = String.Empty;
 
-        public async Task CheckIn(ITranslationServer languageServer, string languageCode)
+        public async Task CheckIn(ITranslationServer languageServer)
         {
-            _languageCodeBeingServed = languageCode;
-            await languageServer.ToggleLanguageActiveStatus(languageCode);
+            _languageCodeBeingServed = this.GetGrainIdentity().PrimaryKeyString;
         }
 
         public async Task CheckOut(ITranslationServer languageServer)
         {
-            await languageServer.ToggleLanguageActiveStatus(_languageCodeBeingServed);
+            // no work to do here yet - eventually dispose of the translator
         }
 
         public async Task<string> Translate(string originalPhrase, string originalLanguageCode = "en")
