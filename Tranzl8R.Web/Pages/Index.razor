@@ -53,17 +53,17 @@
     string currentPhrase = "Hello World";
     List<LanguageItem> languages = new List<LanguageItem>();
     List<TranslationResponse> translations = new List<TranslationResponse>();
+    ITranslationServer translationServer = null;
 
     protected override async Task OnInitializedAsync()
     {
-        var translationServer = _grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
+        translationServer = _grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
         languages = await translationServer.GetAllLanguages();
         await base.OnInitializedAsync();
     }
 
     protected async Task ToggleTranslator(string languageCode)
     {
-        var translationServer = _grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
         await translationServer.ToggleLanguageActiveStatus(languageCode);
         languages = await translationServer.GetAllLanguages();
         base.StateHasChanged();
@@ -72,7 +72,6 @@
     protected async Task Translate()
     {
         translations.Clear();
-        var translationServer = _grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
         translations = await translationServer.Translate(currentPhrase);
         base.StateHasChanged();
     }
