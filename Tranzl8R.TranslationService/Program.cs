@@ -6,10 +6,6 @@ using System.Net;
 
 IHost host = Host
     .CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
-        services.AddHostedService<Worker>();
-    })
     .ConfigureAppConfiguration(configurationBuilder =>
     {
         configurationBuilder.AddUserSecrets<Worker>();
@@ -22,32 +18,31 @@ IHost host = Host
 
         var strPorts = hostBuilderContext.Configuration.GetValue<string>("WEBSITE_PRIVATE_PORTS").Split(',');
 
+        if (strPorts.Length < 2) throw new Exception("Insufficient private ports configured.");
+
         int siloPort = int.Parse(strPorts[0]);
         int gatewayPort = int.Parse(strPorts[1]);
         int delta = 11;
 
         siloBuilder
+            .UseAzureStorageClustering(storageOptions => storageOptions.ConnectionString = storageConnectionString)
+            .AddAzureTableGrainStorageAsDefault(tableStorageOptions =>
+            {
+                tableStorageOptions.ConnectionString = storageConnectionString;
+                tableStorageOptions.UseJson = true;
+            })
             .Configure<SiloOptions>(options => options.SiloName = "Worker Service")
             .Configure<ClusterOptions>(clusterOptions =>
             {
                 clusterOptions.ClusterId = "Cluster";
                 clusterOptions.ServiceId = "Service";
             })
-            .Configure<EndpointOptions>(endpointOptions =>
-            {
-                endpointOptions.AdvertisedIPAddress = IPAddress.Loopback;
-                endpointOptions.SiloPort = siloPort + delta;
-                endpointOptions.GatewayPort = gatewayPort + delta;
-            })
-            .UseAzureStorageClustering(storageOptions =>
-            {
-                storageOptions.ConnectionString = storageConnectionString;
-            })
-            .AddAzureTableGrainStorageAsDefault(tableStorageOptions =>
-            {
-                tableStorageOptions.ConnectionString = storageConnectionString;
-                tableStorageOptions.UseJson = true;
-            });
+            .ConfigureEndpoints(endpointAddress, siloPort + delta, gatewayPort + delta);
+    })
+    .ConfigureServices(services =>
+    {
+        services.AddHttpClient();
+        services.AddHostedService<Worker>();
     })
     .Build();
 

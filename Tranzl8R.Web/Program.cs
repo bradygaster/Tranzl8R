@@ -44,9 +44,10 @@ builder.Host.UseOrleans(siloBuilder =>
             tableStorageOptions.ConnectionString = storageConnectionString;
             tableStorageOptions.UseJson = true;
         })
-        .ConfigureApplicationParts(applicationParts =>
-                applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
-        .UseDashboard();
+        .ConfigureApplicationParts(applicationParts => 
+            applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
+        .UseDashboard()
+        ;
 });
 
 var app = builder.Build();

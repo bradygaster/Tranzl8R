@@ -15,14 +15,21 @@ namespace Tranzl8R.TranslationService
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            var translationServerGrain = grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
-            (await translationServerGrain.GetAllLanguages()).ForEach(async (language) =>
+            try
             {
-                await translationServerGrain.ToggleLanguageActiveStatus(language.Code);
-                _logger.LogInformation($"Translator for {language.Code} ready.");
-            });
+                var translationServerGrain = grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
+                (await translationServerGrain.GetAllLanguages()).ForEach(async (language) =>
+                {
+                    await translationServerGrain.ToggleLanguageActiveStatus(language.Code);
+                    _logger.LogInformation($"Translator for {language.Code} ready.");
+                });
 
-            await base.StartAsync(cancellationToken);
+                await base.StartAsync(cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("Error during start-up.", exception);
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
