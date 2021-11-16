@@ -32,12 +32,7 @@ builder.Host.UseOrleans(siloBuilder =>
             clusterOptions.ClusterId = "Cluster";
             clusterOptions.ServiceId = "Service";
         })
-        .Configure<EndpointOptions>(endpointOptions =>
-        {
-            endpointOptions.AdvertisedIPAddress = IPAddress.Loopback;
-            endpointOptions.SiloPort = siloPort;
-            endpointOptions.GatewayPort = gatewayPort;
-        })
+        .ConfigureEndpoints(endpointAddress, siloPort, gatewayPort)
         .UseAzureStorageClustering(storageOptions => storageOptions.ConnectionString = storageConnectionString)
         .AddAzureTableGrainStorageAsDefault(tableStorageOptions =>
         {
