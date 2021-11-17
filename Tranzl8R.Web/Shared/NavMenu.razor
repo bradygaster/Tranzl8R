@@ -1,11 +1,4 @@
-﻿@using Microsoft.Extensions.Options;
-@inject IOptions<OrleansDashboard.DashboardOptions> _orleansDashboardOptions
-@inject NavigationManager _navmanager;
-@{
-    var uri = new Uri(_navmanager.Uri);
-    var uriBuilder = new UriBuilder(uri.Scheme, uri.Host, _orleansDashboardOptions.Value.Port);
-    var orleansDashboardUrl = uriBuilder.Uri.AbsoluteUri;
-}
+﻿
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Tranzl8R.Web</a>
@@ -23,7 +16,7 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="@orleansDashboardUrl" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="dashboard" Match="NavLinkMatch.All">
                 <span class="oi oi-graph" aria-hidden="true"></span> Dashboard
             </NavLink>
         </div>

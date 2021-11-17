@@ -40,13 +40,12 @@ builder.Host.UseOrleans(siloBuilder =>
             tableStorageOptions.ConnectionString = storageConnectionString;
             tableStorageOptions.UseJson = true;
         })
-        .ConfigureApplicationParts(applicationParts =>
-            applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
-        .UseDashboard(dashboardOptions =>
-        {
-            dashboardOptions.Port = dashboardPort;
-        });
+        //.ConfigureApplicationParts(applicationParts => applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
+        //.UseDashboard(dashboardOptions => dashboardOptions.HostSelf = false)
+        ;
 });
+
+//builder.Services.AddServicesForSelfHostedDashboard();
 
 var app = builder.Build();
 
@@ -55,6 +54,8 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
+
+//app.Map("/dashboard", d => d.UseOrleansDashboard());
 
 app.UseStaticFiles();
 app.UseRouting();
