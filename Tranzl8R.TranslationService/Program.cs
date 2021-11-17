@@ -9,10 +9,12 @@ using Orleans.Runtime.Placement;
 
 IHost host = Host
     .CreateDefaultBuilder(args)
+#if DEBUG
     .ConfigureAppConfiguration(configurationBuilder =>
     {
         configurationBuilder.AddUserSecrets<Worker>();
     })
+#endif
     .UseOrleans((hostBuilderContext, siloBuilder) =>
     {
         var storageConnectionString = hostBuilderContext.Configuration.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING");

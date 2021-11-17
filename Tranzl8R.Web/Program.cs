@@ -24,6 +24,7 @@ builder.Host.UseOrleans(siloBuilder =>
     
     int siloPort = int.Parse(strPorts[0]);
     int gatewayPort = int.Parse(strPorts[1]);
+    int dashboardPort = (strPorts.Length > 2) ? int.Parse(strPorts[2]) : 8080;
 
     siloBuilder
         .Configure<SiloOptions>(options => options.SiloName = "Web Server")
@@ -39,9 +40,12 @@ builder.Host.UseOrleans(siloBuilder =>
             tableStorageOptions.ConnectionString = storageConnectionString;
             tableStorageOptions.UseJson = true;
         })
-        .ConfigureApplicationParts(applicationParts => 
+        .ConfigureApplicationParts(applicationParts =>
             applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
-        .UseDashboard();
+        .UseDashboard(dashboardOptions =>
+        {
+            dashboardOptions.Port = dashboardPort;
+        });
 });
 
 var app = builder.Build();
