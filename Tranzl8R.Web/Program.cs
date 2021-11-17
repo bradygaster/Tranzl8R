@@ -41,8 +41,7 @@ builder.Host.UseOrleans(siloBuilder =>
         })
         .ConfigureApplicationParts(applicationParts => 
             applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
-        .UseDashboard()
-        ;
+        .UseDashboard();
 });
 
 var app = builder.Build();
