@@ -7,18 +7,18 @@ namespace Tranzl8R
     public class CognitiveServicesTranslationServer : Grain, ITranslationServer
     {
         public CognitiveServicesTranslationServer(IConfiguration configuration,
-            IHttpClientFactory httpClientFactory,
-            IGrainFactory grainFactory)
+            IGrainFactory grainFactory,
+            IHttpClientFactory httpClientFactory)
         {
             Configuration = configuration;
             HttpClientFactory = httpClientFactory;
-            GrainFactory = grainFactory;
+            _grainFactory = grainFactory;
         }
 
         private const string LanguageListUrl = "/languages?api-version=3.0&scope=translation";
+        private IGrainFactory _grainFactory;
         public IConfiguration Configuration { get; }
         public IHttpClientFactory HttpClientFactory { get; }
-        public IGrainFactory GrainFactory { get; }
         public List<LanguageItem> Languages { get; internal set; } = new List<LanguageItem>();
 
         public async Task<List<LanguageItem>> GetAllLanguages()
@@ -54,7 +54,7 @@ namespace Tranzl8R
             Languages.First(_ => _.Code == language).IsTranslatorReady = isReady;
         }
 
-        public async Task<List<TranslationResponse>> Translate(string phrase, string phraseLanguage = "en")
+        public Task<List<TranslationResponse>> Translate(string phrase, string phraseLanguage = "en")
         {
             var languagesWithTranslators = Languages.Where(_ => _.IsTranslatorReady).ToList();
             var result = new List<TranslationResponse>();
@@ -64,7 +64,7 @@ namespace Tranzl8R
             {
                 taskList.Add(Task.Run(async () =>
                 {
-                    var translator = GrainFactory.GetGrain<ITranslator>(language.Code);
+                    var translator = _grainFactory.GetGrain<ITranslator>(language.Code);
                     var translatedPhrase = await translator.Translate(phrase);
                     result.Add(new TranslationResponse(language.Code, translatedPhrase, phrase));
                 }));
@@ -72,7 +72,7 @@ namespace Tranzl8R
 
             Task.WhenAll(taskList).Wait();
 
-            return result;
+            return Task.FromResult(result);
         }
     }
 }

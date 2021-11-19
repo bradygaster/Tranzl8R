@@ -27,14 +27,15 @@ namespace Tranzl8R
         public IConfiguration Configuration { get; }
         public IHttpClientFactory HttpClientFactory { get; }
 
-        public async Task CheckIn(ITranslationServer languageServer)
+        public Task CheckIn(ITranslationServer languageServer)
         {
             _languageCodeBeingServed = this.GetGrainIdentity().PrimaryKeyString;
+            return Task.CompletedTask;
         }
 
-        public async Task CheckOut(ITranslationServer languageServer)
+        public Task CheckOut(ITranslationServer languageServer)
         {
-            // no work to do here yet - eventually dispose of the translator
+            return Task.CompletedTask;
         }
 
         public async Task<string> Translate(string originalPhrase, string originalLanguageCode = "en")

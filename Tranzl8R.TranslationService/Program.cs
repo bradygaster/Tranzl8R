@@ -27,25 +27,26 @@ IHost host = Host
 
         int siloPort = int.Parse(strPorts[0]);
         int gatewayPort = int.Parse(strPorts[1]);
-        int delta = new Random().Next(1, 100);
 
         siloBuilder
+            .AddApplicationInsightsTelemetryConsumer(hostBuilderContext.Configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY"))
             .UseAzureStorageClustering(storageOptions => storageOptions.ConnectionString = storageConnectionString)
             .AddAzureTableGrainStorageAsDefault(tableStorageOptions =>
             {
                 tableStorageOptions.ConnectionString = storageConnectionString;
                 tableStorageOptions.UseJson = true;
             })
-            .Configure<SiloOptions>(options => options.SiloName = "Worker Service")
+            .Configure<SiloOptions>(options => options.SiloName = "Translation Worker")
             .Configure<ClusterOptions>(clusterOptions =>
             {
                 clusterOptions.ClusterId = "Cluster";
                 clusterOptions.ServiceId = "Service";
             })
-            .ConfigureEndpoints(endpointAddress, siloPort + delta, gatewayPort + delta);
+            .ConfigureEndpoints(endpointAddress, siloPort, gatewayPort);
     })
     .ConfigureServices(services =>
     {
+        services.AddApplicationInsightsMonitoring("Translation Worker");
         services.AddHttpClient();
         services.AddHostedService<Worker>();
     })

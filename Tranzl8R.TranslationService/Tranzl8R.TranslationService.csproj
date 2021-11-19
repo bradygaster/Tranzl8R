@@ -15,6 +15,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="3.5.1" />
+		<PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.AI" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Orleans.Server" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
@@ -24,5 +25,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Tranzl8R.Grains.Interfaces\Tranzl8R.Grains.Interfaces.csproj" />
 		<ProjectReference Include="..\Tranzl8R.Grains\Tranzl8R.Grains.csproj" />
+		<ProjectReference Include="..\Tranzl8R.Infrastructure\Tranzl8R.Infrastructure.csproj" />
 	</ItemGroup>
 </Project>

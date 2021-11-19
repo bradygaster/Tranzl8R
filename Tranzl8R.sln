@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tranzl8R.Grains", "Tranzl8R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tranzl8R.TranslationService", "Tranzl8R.TranslationService\Tranzl8R.TranslationService.csproj", "{806B7400-ADAB-4D1E-BB29-D3F092511218}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tranzl8R.OrleansDashboard", "Tranzl8R.OrleansDashboard\Tranzl8R.OrleansDashboard.csproj", "{B40A1272-91B0-498E-9B70-6D4ABEFDEA8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tranzl8R.Infrastructure", "Tranzl8R.Infrastructure\Tranzl8R.Infrastructure.csproj", "{33B17623-29CA-41E8-A1EF-264D28D5B85B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{806B7400-ADAB-4D1E-BB29-D3F092511218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{806B7400-ADAB-4D1E-BB29-D3F092511218}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{806B7400-ADAB-4D1E-BB29-D3F092511218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B40A1272-91B0-498E-9B70-6D4ABEFDEA8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B40A1272-91B0-498E-9B70-6D4ABEFDEA8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B40A1272-91B0-498E-9B70-6D4ABEFDEA8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B40A1272-91B0-498E-9B70-6D4ABEFDEA8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33B17623-29CA-41E8-A1EF-264D28D5B85B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33B17623-29CA-41E8-A1EF-264D28D5B85B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33B17623-29CA-41E8-A1EF-264D28D5B85B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33B17623-29CA-41E8-A1EF-264D28D5B85B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

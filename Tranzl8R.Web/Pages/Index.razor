@@ -9,8 +9,8 @@
 
 <h2>Perform Translation</h2>
 
-<input type="text" @bind="currentPhrase"/>
-<input type="button" class="btn btn-primary" value="Translate" @onclick="Translate" />
+<input type="text" @bind="currentPhrase" class="col-10"/>
+<input type="button" class="btn btn-primary col-1" value="Translate" @onclick="Translate" />
 <hr size="4" />
 
 <h2>Select Languages</h2>
@@ -53,26 +53,32 @@
     string currentPhrase = "Hello World";
     List<LanguageItem> languages = new List<LanguageItem>();
     List<TranslationResponse> translations = new List<TranslationResponse>();
-    ITranslationServer translationServer = null;
+    ITranslationServer? _translationServer;
 
     protected override async Task OnInitializedAsync()
     {
-        translationServer = _grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
-        languages = await translationServer.GetAllLanguages();
+        _translationServer = _grainFactory.GetGrain<ITranslationServer>(Guid.Empty);
+        languages = await _translationServer.GetAllLanguages();
         await base.OnInitializedAsync();
     }
 
     protected async Task ToggleTranslator(string languageCode)
     {
-        await translationServer.ToggleLanguageActiveStatus(languageCode);
-        languages = await translationServer.GetAllLanguages();
-        base.StateHasChanged();
+        if(_translationServer != null)
+        {
+            await _translationServer.ToggleLanguageActiveStatus(languageCode);
+            languages = await _translationServer.GetAllLanguages();
+            base.StateHasChanged();
+        }
     }
 
     protected async Task Translate()
     {
-        translations.Clear();
-        translations = await translationServer.Translate(currentPhrase);
-        base.StateHasChanged();
+        if (_translationServer != null)
+        {
+            translations.Clear();
+            translations = await _translationServer.Translate(currentPhrase);
+            base.StateHasChanged();
+        }
     }
 }

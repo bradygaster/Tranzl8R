@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
+builder.Services.AddApplicationInsightsMonitoring("Web Server");
 builder.Host.UseOrleans(siloBuilder =>
 {
     var storageConnectionString = builder.Configuration.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING");
@@ -27,6 +28,7 @@ builder.Host.UseOrleans(siloBuilder =>
     int dashboardPort = (strPorts.Length > 2) ? int.Parse(strPorts[2]) : 8080;
 
     siloBuilder
+        .AddApplicationInsightsTelemetryConsumer(builder.Configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY"))
         .Configure<SiloOptions>(options => options.SiloName = "Web Server")
         .Configure<ClusterOptions>(clusterOptions =>
         {
@@ -40,22 +42,16 @@ builder.Host.UseOrleans(siloBuilder =>
             tableStorageOptions.ConnectionString = storageConnectionString;
             tableStorageOptions.UseJson = true;
         })
-        //.ConfigureApplicationParts(applicationParts => applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
-        //.UseDashboard(dashboardOptions => dashboardOptions.HostSelf = false)
         ;
 });
 
-//builder.Services.AddServicesForSelfHostedDashboard();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
-
-//app.Map("/dashboard", d => d.UseOrleansDashboard());
 
 app.UseStaticFiles();
 app.UseRouting();
