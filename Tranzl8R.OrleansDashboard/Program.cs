@@ -11,17 +11,6 @@ builder.Services.AddApplicationInsightsMonitoring("Orleans Dashboard");
 
 builder.Host.UseOrleans(siloBuilder =>
 {
-    var storageConnectionString = builder.Configuration.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING");
-
-    IPAddress endpointAddress = IPAddress.Parse(builder.Configuration.GetValue<string>("WEBSITE_PRIVATE_IP"));
-
-    var strPorts = builder.Configuration.GetValue<string>("WEBSITE_PRIVATE_PORTS").Split(',');
-
-    if (strPorts.Length < 2) throw new Exception("Insufficient private ports configured.");
-
-    int siloPort = int.Parse(strPorts[0]);
-    int gatewayPort = int.Parse(strPorts[1]);
-
     siloBuilder
         .AddApplicationInsightsTelemetryConsumer(builder.Configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY"))
         .Configure<SiloOptions>(options => options.SiloName = "Dashboard")
@@ -30,11 +19,13 @@ builder.Host.UseOrleans(siloBuilder =>
             clusterOptions.ClusterId = "Cluster";
             clusterOptions.ServiceId = "Service";
         })
-        .ConfigureEndpoints(endpointAddress, siloPort, gatewayPort)
-        .UseAzureStorageClustering(storageOptions => storageOptions.ConnectionString = storageConnectionString)
+        .ConfigureEndpointsForAzureAppService(builder.Configuration)
+        .UseAzureStorageClustering(storageOptions => storageOptions.ConnectionString = 
+            builder.Configuration.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING"))
         .AddAzureTableGrainStorageAsDefault(tableStorageOptions =>
         {
-            tableStorageOptions.ConnectionString = storageConnectionString;
+            tableStorageOptions.ConnectionString = 
+                builder.Configuration.GetValue<string>("AZURE_STORAGE_CONNECTION_STRING");
             tableStorageOptions.UseJson = true;
         })
         .ConfigureApplicationParts(applicationParts => applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
@@ -42,6 +33,7 @@ builder.Host.UseOrleans(siloBuilder =>
 });
 
 builder.Services.AddServicesForSelfHostedDashboard();
+
 var app = builder.Build();
 app.UseOrleansDashboard();
 app.UseStaticFiles();
