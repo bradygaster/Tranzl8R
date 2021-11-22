@@ -31,11 +31,11 @@
             <td style="width: 140px;">
             @if(language.IsTranslatorReady)
             {
-                <button class="btn btn-warning" @onclick="() => ToggleTranslator(language.Code)">Deactivate</button>
+                <button class="btn btn-success" @onclick="() => ToggleTranslator(language.Code)">Deactivate</button>
             }
             else
             {
-                <button class="btn btn-success" @onclick="() => ToggleTranslator(language.Code)">Activate</button>
+                <button class="btn btn-warning" @onclick="() => ToggleTranslator(language.Code)">Activate</button>
             }
             </td>
             <td style="width: 80px;">@language.Code</td>
