@@ -1,7 +1,6 @@
 ﻿using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -20,13 +19,7 @@ builder.Host.UseOrleans(siloBuilder =>
             clusterOptions.ClusterId = "Cluster";
             clusterOptions.ServiceId = "Service";
         })
-        .ConfigureEndpointsForAzureAppService(builder.Configuration)
-        .UseAzureStorageClustering(storageOptions => storageOptions.ConnectionString = storageConnectionString)
-        .AddAzureTableGrainStorageAsDefault(tableStorageOptions =>
-        {
-            tableStorageOptions.ConnectionString = storageConnectionString;
-            tableStorageOptions.UseJson = true;
-        });
+        .HostSiloInAzure(builder.Configuration);
 });
 
 

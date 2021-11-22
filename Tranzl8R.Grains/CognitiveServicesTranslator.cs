@@ -15,7 +15,6 @@ namespace Tranzl8R
     public class CognitiveServicesTranslator : Grain, ITranslator
     {
         static readonly string TranslationUrl = "https://api.cognitive.microsofttranslator.com/{0}?api-version=3.0";
-        string _languageCodeBeingServed = String.Empty;
 
         public CognitiveServicesTranslator(IConfiguration configuration,
             IHttpClientFactory httpClientFactory)
@@ -27,21 +26,10 @@ namespace Tranzl8R
         public IConfiguration Configuration { get; }
         public IHttpClientFactory HttpClientFactory { get; }
 
-        public Task CheckIn(ITranslationServer languageServer)
-        {
-            _languageCodeBeingServed = this.GetGrainIdentity().PrimaryKeyString;
-            return Task.CompletedTask;
-        }
-
-        public Task CheckOut(ITranslationServer languageServer)
-        {
-            return Task.CompletedTask;
-        }
-
         public async Task<string> Translate(string originalPhrase, string originalLanguageCode = "en")
         {
             string endpoint = string.Format(TranslationUrl, "translate");
-            string uri = string.Format(endpoint + "&from={0}&to={1}", originalLanguageCode, _languageCodeBeingServed);
+            string uri = string.Format(endpoint + "&from={0}&to={1}", originalLanguageCode, this.GetGrainIdentity().PrimaryKeyString);
 
             System.Object[] body = new System.Object[] { new { Text = originalPhrase } };
             var requestBody = JsonConvert.SerializeObject(body);

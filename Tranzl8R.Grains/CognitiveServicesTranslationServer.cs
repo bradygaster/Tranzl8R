@@ -37,21 +37,12 @@ namespace Tranzl8R
             return Languages;
         }
 
-        public async Task ToggleLanguageActiveStatus(string language)
+        public Task ToggleLanguageActiveStatus(string language)
         {
             var isReady = !(Languages.First(_ => _.Code == language).IsTranslatorReady);
             var translator = GrainFactory.GetGrain<ITranslator>(language);
-
-            if (isReady)
-            {
-                await translator.CheckIn(this);
-            }
-            else
-            {
-                await translator.CheckOut(this);
-            }
-
             Languages.First(_ => _.Code == language).IsTranslatorReady = isReady;
+            return Task.CompletedTask;
         }
 
         public Task<List<TranslationResponse>> Translate(string phrase, string phraseLanguage = "en")
