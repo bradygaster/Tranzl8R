@@ -34,7 +34,7 @@ resource translator 'Microsoft.CognitiveServices/accounts@2021-04-30' = {
   location: 'global'
   kind: 'TextTranslation'
   sku: {
-    name: 'F0'
+    name: 'S1'
   }
 }
 
