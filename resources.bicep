@@ -94,12 +94,24 @@ resource front_end 'Microsoft.Web/sites@2021-02-01' = {
           value: translator.location
         }
         {
-          name: 'AZURE_STORAGE_CONNECTION_STRING'
+          name: 'ORLEANS_AZURE_STORAGE_CONNECTION_STRING'
           value: format('DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.name, storage.apiVersion).keys[0].value};EndpointSuffix=core.windows.net')
         }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: appInsightsComponents.properties.InstrumentationKey
+        }
+        {
+          name: 'ORLEANS_SILO_NAME'
+          value: 'Web UI'
+        }
+        {
+          name: 'ORLEANS_CLUSTER_ID'
+          value: 'Tranzl8R_Cluster'
+        }
+        {
+          name: 'ORLEANS_SERVICE_ID'
+          value: 'Tranzl8R_Service'
         }
       ]
     }
@@ -138,12 +150,24 @@ resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
           value: translator.location
         }
         {
-          name: 'AZURE_STORAGE_CONNECTION_STRING'
+          name: 'ORLEANS_AZURE_STORAGE_CONNECTION_STRING'
           value: format('DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.name, storage.apiVersion).keys[0].value};EndpointSuffix=core.windows.net')
         }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: appInsightsComponents.properties.InstrumentationKey
+        }
+        {
+          name: 'ORLEANS_SILO_NAME'
+          value: 'Orleans Dashboard'
+        }
+        {
+          name: 'ORLEANS_CLUSTER_ID'
+          value: 'Tranzl8R_Cluster'
+        }
+        {
+          name: 'ORLEANS_SERVICE_ID'
+          value: 'Tranzl8R_Service'
         }
       ]
     }

@@ -11,14 +11,8 @@ builder.Services.AddApplicationInsightsMonitoring("Orleans Dashboard");
 builder.Host.UseOrleans(siloBuilder =>
 {
     siloBuilder
-        .AddApplicationInsightsTelemetryConsumer(builder.Configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY"))
-        .Configure<SiloOptions>(options => options.SiloName = "Dashboard")
-        .Configure<ClusterOptions>(clusterOptions =>
-        {
-            clusterOptions.ClusterId = "Cluster";
-            clusterOptions.ServiceId = "Service";
-        })
         .HostSiloInAzure(builder.Configuration)
+        // the orleans dashboard configuration section
         .ConfigureApplicationParts(applicationParts => applicationParts.AddApplicationPart(typeof(CognitiveServicesTranslator).Assembly).WithReferences())
         .UseDashboard(dashboardOptions => dashboardOptions.HostSelf = false);
 });
