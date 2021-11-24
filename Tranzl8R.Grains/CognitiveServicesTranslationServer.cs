@@ -15,7 +15,6 @@ namespace Tranzl8R
             _grainFactory = grainFactory;
         }
 
-        private const string LanguageListUrl = "/languages?api-version=3.0&scope=translation";
         private IGrainFactory _grainFactory;
         public IConfiguration Configuration { get; }
         public IHttpClientFactory HttpClientFactory { get; }
@@ -26,7 +25,7 @@ namespace Tranzl8R
             if(!Languages.Any())
             {
                 using (var client = HttpClientFactory.CreateClient())
-                using (var request = client.SetupLanguageListRequestFromConfiguration(Configuration, LanguageListUrl))
+                using (var request = client.SetupLanguageListRequestFromConfiguration(Configuration))
                 {
                     request.Method = HttpMethod.Get;
                     HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
