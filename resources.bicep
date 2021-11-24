@@ -38,12 +38,29 @@ resource translator 'Microsoft.CognitiveServices/accounts@2021-04-30' = {
   }
 }
 
+resource logs 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: '${resourceBaseName}-logs'
+  location: resourceGroup().location
+  properties: any({
+    retentionInDays: 30
+    features: {
+      searchVersion: 1
+    }
+    sku: {
+      name: 'PerGB2018'
+    }
+  })
+}
+
 resource appInsightsComponents 'Microsoft.Insights/components@2020-02-02' = {
   name: '${resourceBaseName}ai'
   location: resourceGroup().location
   kind: 'web'
   properties: {
     Application_Type: 'web'
+    WorkspaceResourceId: logs.id
+    IngestionMode: 'LogAnalytics'
+    RetentionInDays: 30
   }
 }
 
@@ -56,6 +73,41 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   }
 }
 
+var shared_config = [
+  {
+    name: 'ASPNETCORE_ENVIRONMENT'
+    value: 'Development'
+  }
+  {
+    name: 'AZURE_TRANSLATOR_ENDPOINT'
+    value: translator.properties.endpoint
+  }
+  {
+    name: 'AZURE_TRANSLATOR_SUBSCRIPTION_KEY'
+    value: listKeys(translator.id, translator.apiVersion).key1
+  }
+  {
+    name: 'AZURE_TRANSLATOR_LOCATION'
+    value: translator.location
+  }
+  {
+    name: 'ORLEANS_AZURE_STORAGE_CONNECTION_STRING'
+    value: format('DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.name, storage.apiVersion).keys[0].value};EndpointSuffix=core.windows.net')
+  }
+  {
+    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+    value: appInsightsComponents.properties.InstrumentationKey
+  }
+  {
+    name: 'ORLEANS_CLUSTER_ID'
+    value: 'Cluster'
+  }
+  {
+    name: 'ORLEANS_SERVICE_ID'
+    value: 'Service'
+  }
+]
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
   name: '${resourceBaseName}plan'
   location: resourceGroup().location
@@ -65,6 +117,13 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
     capacity: 1
   }
 }
+
+var ui_silo_config = [
+  {
+    name: 'ORLEANS_SILO_NAME'
+    value: 'Orleans Dashboard'
+  }
+]
 
 resource front_end 'Microsoft.Web/sites@2021-02-01' = {
   name: '${resourceBaseName}-ui'
@@ -76,32 +135,7 @@ resource front_end 'Microsoft.Web/sites@2021-02-01' = {
     siteConfig: {
       vnetPrivatePortsCount: 2
       webSocketsEnabled: true
-      appSettings: [
-        {
-          name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Development'
-        }
-        {
-          name: 'AZURE_TRANSLATOR_ENDPOINT'
-          value: translator.properties.endpoint
-        }
-        {
-          name: 'AZURE_TRANSLATOR_SUBSCRIPTION_KEY'
-          value: listKeys(translator.id, translator.apiVersion).key1
-        }
-        {
-          name: 'AZURE_TRANSLATOR_LOCATION'
-          value: translator.location
-        }
-        {
-          name: 'ORLEANS_AZURE_STORAGE_CONNECTION_STRING'
-          value: format('DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.name, storage.apiVersion).keys[0].value};EndpointSuffix=core.windows.net')
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsightsComponents.properties.InstrumentationKey
-        }
-      ]
+      appSettings: union(shared_config, ui_silo_config)
     }
   }
   dependsOn: [
@@ -109,6 +143,13 @@ resource front_end 'Microsoft.Web/sites@2021-02-01' = {
     vnet
   ]
 }
+
+var dashboard_silo_config = [
+  {
+    name: 'ORLEANS_SILO_NAME'
+    value: 'Orleans Dashboard'
+  }
+]
 
 resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
   name: '${resourceBaseName}-dashboard'
@@ -120,44 +161,7 @@ resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
     siteConfig: {
       vnetPrivatePortsCount: 2
       webSocketsEnabled: true
-      appSettings: [
-        {
-          name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Development'
-        }
-        {
-          name: 'AZURE_TRANSLATOR_ENDPOINT'
-          value: translator.properties.endpoint
-        }
-        {
-          name: 'AZURE_TRANSLATOR_SUBSCRIPTION_KEY'
-          value: listKeys(translator.id, translator.apiVersion).key1
-        }
-        {
-          name: 'AZURE_TRANSLATOR_LOCATION'
-          value: translator.location
-        }
-        {
-          name: 'ORLEANS_AZURE_STORAGE_CONNECTION_STRING'
-          value: format('DefaultEndpointsProtocol=https;AccountName=${storage.name};AccountKey=${listKeys(storage.name, storage.apiVersion).keys[0].value};EndpointSuffix=core.windows.net')
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsightsComponents.properties.InstrumentationKey
-        }
-        {
-          name: 'ORLEANS_SILO_NAME'
-          value: 'Orleans Dashboard'
-        }
-        {
-          name: 'ORLEANS_CLUSTER_ID'
-          value: 'Cluster'
-        }
-        {
-          name: 'ORLEANS_SERVICE_ID'
-          value: 'Service'
-        }
-      ]
+      appSettings: union(shared_config,dashboard_silo_config)
     }
   }
   dependsOn: [
