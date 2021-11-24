@@ -7,7 +7,6 @@ namespace Tranzl8R.Infrastructure
     public class ClusterOptionsBuilder : AzureSiloBuilder
     {
         public override void Build(ISiloBuilder siloBuilder, IConfiguration configuration)
-
         {
             var clusterId = configuration.GetValue<string>("ORLEANS_CLUSTER_ID");
             var serviceId = configuration.GetValue<string>("ORLEANS_SERVICE_ID");

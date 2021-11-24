@@ -1,5 +1,11 @@
 
 param resourceBaseName string = resourceGroup().name
+param containerAppName string
+param siloImage string
+param containerRegistryUsername string
+
+@secure()
+param containerRegistryPassword string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-03-01' = {
   name: '${resourceBaseName}vnet'
@@ -168,5 +174,77 @@ resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
     storage
     vnet
   ]
+}
+
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
+  name: toLower('${resourceBaseName}acr')
+  location: resourceGroup().location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    adminUserEnabled: true
+  }
+}
+
+resource containerAppEnv 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
+  name: '${resourceBaseName}env'
+  location: resourceGroup().location
+  kind: 'containerenvironment'
+  properties: {
+    type: 'managed'
+    internalLoadBalancerEnabled: false
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logs.properties.customerId
+        sharedKey: logs.listKeys().primarySharedKey
+      }
+    }
+  }
+}
+
+var container_app_config = [
+  {
+    name: 'ORLEANS_SILO_NAME'
+    value: 'Tranzl8R'
+  }
+]
+
+resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
+  name: toLower('${resourceBaseName}aca')
+  kind: 'containerapp'
+  location: resourceGroup().location
+  properties: {
+    kubeEnvironmentId: containerAppEnv.id
+    configuration: {
+      secrets: [
+        {
+          name: 'registry-password'
+          value: containerRegistryPassword
+        }
+      ]      
+      registries: [
+        {
+          server: containerRegistry
+          username: containerRegistryUsername
+          passwordSecretRef: 'registry-password'
+        }
+      ]    
+    }
+    template: {
+      containers: [
+        {
+          image: siloImage
+          name: containerAppName
+          env: union(shared_config, container_app_config)
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 1
+      }
+    }
+  }
 }
 

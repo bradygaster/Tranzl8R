@@ -8,11 +8,8 @@ namespace Tranzl8R.Infrastructure
     {
         public override void Build(ISiloBuilder siloBuilder, IConfiguration configuration)
         {
-            if (configuration.GetValue<string>("ORLEANS_SILO_NAME") != null)
-            {
-                var siloName = configuration.GetValue<string>("ORLEANS_SILO_NAME");
-                siloBuilder.Configure<SiloOptions>(options => options.SiloName = string.IsNullOrEmpty(siloName) ? "Silo" : siloName);
-            }
+            var siloName = string.IsNullOrEmpty(configuration.GetValue<string>("ORLEANS_SILO_NAME")) ? "Silo" : configuration.GetValue<string>("ORLEANS_SILO_NAME");
+            siloBuilder.Configure<SiloOptions>(options => options.SiloName = siloName);
 
             base.Build(siloBuilder, configuration);
         }

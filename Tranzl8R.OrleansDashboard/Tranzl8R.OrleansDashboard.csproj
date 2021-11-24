@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	  <UserSecretsId>80a43d4f-f72d-4817-aae0-abb0b57b081d</UserSecretsId>
+	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -17,6 +18,7 @@
 		<PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.AI" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Orleans.Server" Version="3.5.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
 		<PackageReference Include="OrleansDashboard" Version="3.5.2" />
 	</ItemGroup>
 

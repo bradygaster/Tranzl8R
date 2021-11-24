@@ -11,7 +11,8 @@ namespace Tranzl8R.Infrastructure
             if (configuration.GetValue<string>("ORLEANS_SILO_PORT") != null &&
                 configuration.GetValue<string>("ORLEANS_GATEWAY_PORT") != null)
             {
-                siloBuilder.ConfigureEndpoints(Dns.GetHostName(),
+                var host = Dns.GetHostName();
+                siloBuilder.ConfigureEndpoints(host,
                     configuration.GetValue<int>("ORLEANS_SILO_PORT"),
                     configuration.GetValue<int>("ORLEANS_GATEWAY_PORT")
                 );
