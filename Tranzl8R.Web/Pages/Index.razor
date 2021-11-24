@@ -68,6 +68,7 @@
         {
             await _translationServer.ToggleLanguageActiveStatus(languageCode);
             languages = await _translationServer.GetAllLanguages();
+            await Translate();
             base.StateHasChanged();
         }
     }

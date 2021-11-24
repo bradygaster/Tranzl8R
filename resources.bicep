@@ -101,18 +101,6 @@ resource front_end 'Microsoft.Web/sites@2021-02-01' = {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: appInsightsComponents.properties.InstrumentationKey
         }
-        {
-          name: 'ORLEANS_SILO_NAME'
-          value: 'Web UI'
-        }
-        {
-          name: 'ORLEANS_CLUSTER_ID'
-          value: 'Tranzl8R_Cluster'
-        }
-        {
-          name: 'ORLEANS_SERVICE_ID'
-          value: 'Tranzl8R_Service'
-        }
       ]
     }
   }
@@ -163,11 +151,11 @@ resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
         }
         {
           name: 'ORLEANS_CLUSTER_ID'
-          value: 'Tranzl8R_Cluster'
+          value: 'Cluster'
         }
         {
           name: 'ORLEANS_SERVICE_ID'
-          value: 'Tranzl8R_Service'
+          value: 'Service'
         }
       ]
     }
