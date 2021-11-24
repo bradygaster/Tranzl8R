@@ -121,7 +121,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
 var ui_silo_config = [
   {
     name: 'ORLEANS_SILO_NAME'
-    value: 'Orleans Dashboard'
+    value: 'Tranzl8R UI'
   }
 ]
 
