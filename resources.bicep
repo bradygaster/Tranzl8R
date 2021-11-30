@@ -1,42 +1,7 @@
-
 param resourceBaseName string = resourceGroup().name
-param containerAppName string
-param siloImage string
-param containerRegistryUsername string
-
-@secure()
-param containerRegistryPassword string
-
-resource vnet 'Microsoft.Network/virtualNetworks@2021-03-01' = {
-  name: '${resourceBaseName}vnet'
-  location: resourceGroup().location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '172.17.0.0/16'
-      ]
-    }
-    subnets: [
-      {
-        name: 'default'
-        properties: {
-          addressPrefix: '172.17.0.0/24'
-          delegations: [
-            {
-              name: 'delegation'
-              properties: {
-                serviceName: 'Microsoft.Web/serverFarms'
-              }
-            }
-          ]
-        }
-      }
-    ]
-  }
-}
 
 resource translator 'Microsoft.CognitiveServices/accounts@2021-04-30' = {
-  name: '${resourceBaseName}translator'
+  name: '${resourceBaseName}txtrnsltn'
   location: 'global'
   kind: 'TextTranslation'
   sku: {
@@ -79,6 +44,27 @@ resource storage 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   }
 }
 
+var ui_silo_config = [
+  {
+    name: 'ORLEANS_SILO_NAME'
+    value: 'Tranzl8R UI'
+  }
+]
+
+var dashboard_silo_config = [
+  {
+    name: 'ORLEANS_SILO_NAME'
+    value: 'Orleans Dashboard'
+  }
+]
+
+var translator_silo_config = [
+  {
+    name: 'ORLEANS_SILO_NAME'
+    value: 'Tranzl8R'
+  }
+]
+
 var shared_config = [
   {
     name: 'ASPNETCORE_ENVIRONMENT'
@@ -114,6 +100,34 @@ var shared_config = [
   }
 ]
 
+resource vnet 'Microsoft.Network/virtualNetworks@2021-03-01' = {
+  name: '${resourceBaseName}vnet'
+  location: resourceGroup().location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '172.17.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'default'
+        properties: {
+          addressPrefix: '172.17.0.0/24'
+          delegations: [
+            {
+              name: 'delegation'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
   name: '${resourceBaseName}plan'
   location: resourceGroup().location
@@ -123,13 +137,6 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-12-01' = {
     capacity: 1
   }
 }
-
-var ui_silo_config = [
-  {
-    name: 'ORLEANS_SILO_NAME'
-    value: 'Tranzl8R UI'
-  }
-]
 
 resource front_end 'Microsoft.Web/sites@2021-02-01' = {
   name: '${resourceBaseName}-ui'
@@ -150,13 +157,6 @@ resource front_end 'Microsoft.Web/sites@2021-02-01' = {
   ]
 }
 
-var dashboard_silo_config = [
-  {
-    name: 'ORLEANS_SILO_NAME'
-    value: 'Orleans Dashboard'
-  }
-]
-
 resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
   name: '${resourceBaseName}-dashboard'
   kind: 'app'
@@ -167,7 +167,7 @@ resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
     siteConfig: {
       vnetPrivatePortsCount: 2
       webSocketsEnabled: true
-      appSettings: union(shared_config,dashboard_silo_config)
+      appSettings: union(shared_config, dashboard_silo_config)
     }
   }
   dependsOn: [
@@ -176,75 +176,4 @@ resource dashboard 'Microsoft.Web/sites@2021-02-01' = {
   ]
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
-  name: toLower('${resourceBaseName}acr')
-  location: resourceGroup().location
-  sku: {
-    name: 'Basic'
-  }
-  properties: {
-    adminUserEnabled: true
-  }
-}
-
-resource containerAppEnv 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
-  name: '${resourceBaseName}env'
-  location: resourceGroup().location
-  kind: 'containerenvironment'
-  properties: {
-    type: 'managed'
-    internalLoadBalancerEnabled: false
-    appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: logs.properties.customerId
-        sharedKey: logs.listKeys().primarySharedKey
-      }
-    }
-  }
-}
-
-var container_app_config = [
-  {
-    name: 'ORLEANS_SILO_NAME'
-    value: 'Tranzl8R'
-  }
-]
-
-resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
-  name: toLower('${resourceBaseName}aca')
-  kind: 'containerapp'
-  location: resourceGroup().location
-  properties: {
-    kubeEnvironmentId: containerAppEnv.id
-    configuration: {
-      secrets: [
-        {
-          name: 'registry-password'
-          value: containerRegistryPassword
-        }
-      ]      
-      registries: [
-        {
-          server: containerRegistry
-          username: containerRegistryUsername
-          passwordSecretRef: 'registry-password'
-        }
-      ]    
-    }
-    template: {
-      containers: [
-        {
-          image: siloImage
-          name: containerAppName
-          env: union(shared_config, container_app_config)
-        }
-      ]
-      scale: {
-        minReplicas: 1
-        maxReplicas: 1
-      }
-    }
-  }
-}
 
