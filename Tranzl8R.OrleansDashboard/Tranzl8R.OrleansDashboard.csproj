@@ -23,7 +23,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Orleans.Azure.Infrastructure\Orleans.Azure.Infrastructure.csproj" />
 		<ProjectReference Include="..\Tranzl8R.Grains.Interfaces\Tranzl8R.Grains.Interfaces.csproj" />
 		<ProjectReference Include="..\Tranzl8R.Grains\Tranzl8R.Grains.csproj" />
 		<ProjectReference Include="..\Tranzl8R.Infrastructure\Tranzl8R.Infrastructure.csproj" />
