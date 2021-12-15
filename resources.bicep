@@ -58,13 +58,6 @@ var dashboard_silo_config = [
   }
 ]
 
-var translator_silo_config = [
-  {
-    name: 'ORLEANS_SILO_NAME'
-    value: 'Tranzl8R'
-  }
-]
-
 var shared_config = [
   {
     name: 'ASPNETCORE_ENVIRONMENT'
